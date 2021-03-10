@@ -1,8 +1,9 @@
 import re
 from vigenere_cipher import vigenere
 from key_parser import parse_keys
-from stats import text_statistics, compare
+from stats import text_statistics, compare, letterFreq
 from random import choice, choices
+from string import ascii_lowercase as letters
 
 
 PLAINTEXT = """
@@ -27,7 +28,7 @@ best-known being integer factorization. """
 SECRET = None
 
 # Number of keys to choose from dictionary
-NUMBER_OF_KEYS = 10000
+NUMBER_OF_KEYS = 1000
 
 
 def generate_secret(keys):
@@ -47,9 +48,13 @@ def main():
 
     keys.sort(key=lambda x: -compare(text_statistics(vigenere(cipher, x, dec=True))))
     best_key = keys[0]
-    best_key_stat = compare(text_statistics(vigenere(cipher, keys[0], dec=True)))
-    print(f'Best key: `{best_key}` . Result for best key: {best_key_stat:.6f}')
-    print(f'Actual key: `{SECRET}`')
+    stats = text_statistics(vigenere(cipher, keys[0], dec=True))
+    best_key_stat = compare(stats)
+    print(f'Best key: `{best_key}` . Result for best key: {best_key_stat:.6f}\n')
+    print(f'Statistic for `{best_key}` key:\n{dict(zip(letters, stats))}\n')
+    print(f'Standard letter frequency:\n{letterFreq}')
+
+    assert SECRET == best_key
 
 
 if __name__ == '__main__':
